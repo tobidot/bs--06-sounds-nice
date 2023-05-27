@@ -1,5 +1,7 @@
 import { Vector2D } from "../../library/math";
 import { PhysicsProxy, Collision } from "../../library/physics/Physics";
+import { ASSET_IMAGE_NAMES, ASSET_SFX_NAMES } from "../base/Assets";
+import { Brick } from "./Brick";
 import { Entity } from "./Entity";
 
 export class Ball extends Entity {
@@ -9,7 +11,7 @@ export class Ball extends Entity {
     constructor(
         position: Vector2D
     ) {
-        const image = window.game.assets.getImage("ball-blue");
+        const image = window.game.assets.getImage(ASSET_IMAGE_NAMES.BALL);
         super(position, image);
         this.physics.static = false;
         this.hit_box.size.mul(0.33);
@@ -30,6 +32,15 @@ export class Ball extends Entity {
     public onCollision(other: PhysicsProxy, collision: Collision): void {
         this.no_collision_for_s = 0;
         this.speed_up_tick = 0;
+
+        if (other.reference instanceof Brick) {
+            game.audio.sfx.play(ASSET_SFX_NAMES.HIT_BRICK);
+        } else if (other.reference instanceof Ball) {
+            game.audio.sfx.play(ASSET_SFX_NAMES.HIT_BALL);
+        } else {
+            game.audio.sfx.play(ASSET_SFX_NAMES.HIT_PADDLE);
+        }
+
         // steer the ball if it hits the paddle
         if (other.reference === game.model.paddle)     {
             const paddle = other.reference as Entity;
@@ -50,6 +61,8 @@ export class Ball extends Entity {
         if (distance.y > 0 && !game.model.isGameWon()) {
             // hit the bottom
             game.model.removeEntity(this);
+        } else {
+            game.audio.sfx.play(ASSET_SFX_NAMES.HIT_WALL);
         }
     }
 

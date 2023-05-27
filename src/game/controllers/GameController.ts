@@ -2,6 +2,7 @@ import { KeyboardEvent, KeyboardController, KeyboardHandler, KeyName, assert, Mo
 import { Controller } from "../../library/abstract/mvc/Controller";
 import { ControllerResponse } from "../../library/abstract/mvc/Response";
 import { Vector2D } from "../../library/math";
+import { ASSET_MUSIC_NAMES } from "../base/Assets";
 import { Ball } from "../models/Ball";
 import { Brick } from "../models/Brick";
 import { GameModel } from "../models/GameModel";
@@ -17,7 +18,8 @@ export class GameController implements Controller, KeyboardController, MouseCont
     /**
      * Start a new game
      */
-    public newGame(): ControllerResponse {
+    public newGame(): ControllerResponse {     
+        game.audio.music.stop();
         this.model.restart();
         for (let x = 0; x < 10; x++) {
             for (let y = 0; y < 5; y++) {
@@ -86,7 +88,11 @@ export class GameController implements Controller, KeyboardController, MouseCont
             const position = this.model.paddle.hit_box.center.cpy().add(new Vector2D(0, -20));
             const entity = new Ball(position);
             this.model.addEntity(entity);
-            this.model.paddle.has_ball = false;
+            if (!this.model.did_first_action) {
+                this.model.did_first_action = true;
+                game.audio.music.queueNext(ASSET_MUSIC_NAMES.TRACK_0);
+            }
+            // this.model.paddle.has_ball = false;
         }
     }
 

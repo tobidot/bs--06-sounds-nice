@@ -12,6 +12,7 @@ export class GameModel {
     public debug: boolean = false;
     public paddle: Paddle |null = null;
     public lives :number = 3;
+    public did_first_action: boolean = false;
 
     constructor(
         public context: CanvasRenderingContext2D,
@@ -31,6 +32,7 @@ export class GameModel {
             world_box: this.physics.options.world_box,
             simple_collisions: false,
         });
+        this.did_first_action = false;
         this.entities = [];
         this.debug = false;
     }

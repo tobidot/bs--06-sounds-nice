@@ -1,6 +1,7 @@
 import { assert } from "../../library/flow";
 import { Vector2D } from "../../library/math";
 import { Collision, PhysicsProxy } from "../../library/physics/Physics";
+import { ASSET_IMAGE_NAMES } from "../base/Assets";
 import { Ball } from "./Ball";
 import { Entity } from "./Entity";
 
@@ -11,7 +12,7 @@ export class Brick extends Entity {
     constructor(
         position: Vector2D,
     ) {
-        const image = window.game.assets.getImage("brick-red");
+        const image = window.game.assets.getImage(ASSET_IMAGE_NAMES.BRICK);
         super(position, image);
         this.physics.static = true;
         this.hit_box.size.set({x:80,y: 25});

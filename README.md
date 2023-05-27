@@ -4,6 +4,7 @@ This project is an entry to my ["Baby-Steps"-project-series](https://www.game-ob
 
 ## Description
 
+We can now trigger sound effects.
 
 ## Library Addings
 

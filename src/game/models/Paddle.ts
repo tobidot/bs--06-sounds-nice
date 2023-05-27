@@ -1,5 +1,6 @@
 import { Vector2D } from "../../library/math";
 import { PhysicsProxy, Collision } from "../../library/physics/Physics";
+import { ASSET_IMAGE_NAMES } from "../base/Assets";
 import { Entity } from "./Entity";
 
 export class Paddle extends Entity {
@@ -8,7 +9,7 @@ export class Paddle extends Entity {
     constructor(
         position: Vector2D
     ) {
-        const image = window.game.assets.getImage("brick-metal");
+        const image = window.game.assets.getImage(ASSET_IMAGE_NAMES.PADDLE);
         super(position, image);
         this.physics.static = true;
         this.hit_box.size.set({x:100,y:20});

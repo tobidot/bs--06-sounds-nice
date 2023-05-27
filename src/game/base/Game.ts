@@ -3,6 +3,7 @@ import { GameModel } from "../models/GameModel";
 import { GameView } from "../views/GameView";
 import * as tgt from "../../library/index";
 import { registerAssets } from "./Assets";
+import { assertNotNull } from "../../library/index";
 
 /**
  * The game class
@@ -12,6 +13,7 @@ export class Game {
     public keyboard: tgt.KeyboardHandler;
     public mouse: tgt.MouseHandler;
     public controller: GameController;
+    public audio: tgt.AudioPlayer;
     public view: GameView;
     public model: GameModel;
     public last_time_ms: number = 0;
@@ -24,7 +26,10 @@ export class Game {
         window.game = this;
         const canvas = tgt.getElementByQuerySelector(app, "canvas", HTMLCanvasElement);
         const context = canvas.getContext("2d",  {alpha: false});
-        tgt.assertNotNull(context, "No 2d context found");
+        assertNotNull(context, "No 2d context found");
+        this.audio = new tgt.AudioPlayer();
+        this.audio.music.setVolume(0.6);
+        this.audio.sfx.setVolume(1.0);
         this.assets = new tgt.AssetManager();
         registerAssets(this.assets);
         this.loading = this.loading.then(() => this.assets.loadAll(context));

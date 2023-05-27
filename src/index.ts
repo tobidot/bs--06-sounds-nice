@@ -14,4 +14,7 @@ declare global {
     window.game = game = new Game(app);
     await window.game.init();
     await window.game.run();
-})();
+})().catch((error) => {
+    console.error(error);
+    throw error;
+});
