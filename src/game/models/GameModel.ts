@@ -35,6 +35,7 @@ export class GameModel {
         this.did_first_action = false;
         this.entities = [];
         this.debug = false;
+        this.lives = 3;
     }
 
     /**
