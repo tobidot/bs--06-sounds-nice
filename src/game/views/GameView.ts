@@ -26,7 +26,7 @@ export class GameView implements View {
             const position = entity.render_box.center.cpy().sub(offset);
             this.context.globalAlpha = 1;
             if (entity instanceof Brick) {
-                this.context.globalAlpha = Math.min(1,Math.max(0, Math.sqrt(entity.hp) / Math.sqrt( entity.max_hp)));
+                this.context.globalAlpha = Math.min(1, Math.max(0, Math.sqrt(entity.hp) / Math.sqrt(entity.max_hp)));
             }
             this.context.drawImage(
                 entity.image.image,
@@ -48,16 +48,57 @@ export class GameView implements View {
                 }
             }
         });
+        this.context.globalAlpha = 0.75;
         const heart_image = window.game.assets.getImage("heart");
-        for(let i=0; i<model.lives; i++) {
-            this.context.globalAlpha = 0.75;
+        for (let i = 0; i < model.lives; i++) {
             this.context.drawImage(
                 heart_image.image,
                 10 + i * 75, 10,
                 heart_image.width, heart_image.height
             );
         }
-        this.context.globalAlpha = 1;        
+        const icon_music = window.game.assets.getImage("icon-music");
+        const icon_sound = window.game.assets.getImage("icon-sound");
+        this.context.drawImage(
+            icon_music.image,
+            800 - 10 - 32, 10,
+            32, 32
+        );
+        this.context.drawImage(
+            icon_sound.image,
+            800 - 10 - 32 - 10 - 32, 10,
+            32, 32
+        );
+        this.context.globalAlpha = 0.5;
+        this.context.fillStyle = "#0f0";
+        if (!game.audio.music.is_muted) {
+            this.context.fillStyle = "#0f0";
+            this.context.fillRect(
+                800 - 10 - 5, 10 + 32 - 32 * game.audio.music.volume,
+                5, 32 * game.audio.music.volume
+            );
+        } else {
+            this.context.fillStyle = "#800";
+            this.context.fillRect(
+                800 - 10 - 32, 10,
+                32, 32
+            );
+        }
+        if (!game.audio.sfx.is_muted) {
+            this.context.fillStyle = "#0f0";
+            this.context.fillRect(
+                800 - 10 - 32 - 10 - 5, 10 + 32 - 32 * game.audio.sfx.volume,
+                5, 32 * game.audio.sfx.volume
+            );
+        } else {
+            this.context.fillStyle = "#800";
+            this.context.fillRect(
+                800 - 10 - 32 - 10 - 32, 10,
+                32, 32
+            );
+        }
+
+        this.context.globalAlpha = 1;
         if (model.debug) {
             model.physics.proxies.forEach((proxy) => {
                 this.context.strokeStyle = "#f00";

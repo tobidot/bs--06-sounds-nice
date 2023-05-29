@@ -28,8 +28,6 @@ export class Game {
         const context = canvas.getContext("2d",  {alpha: false});
         assertNotNull(context, "No 2d context found");
         this.audio = new tgt.AudioPlayer();
-        this.audio.music.setVolume(0.6);
-        this.audio.sfx.setVolume(1.0);
         this.assets = new tgt.AssetManager();
         registerAssets(this.assets);
         this.loading = this.loading.then(() => this.assets.loadAll(context));

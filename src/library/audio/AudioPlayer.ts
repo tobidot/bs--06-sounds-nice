@@ -32,20 +32,54 @@ export class AudioPlayer {
     }
 }
 
+abstract class AudioPlayerBase {
+    protected _volume = 1;
+    protected _is_muted = false;
+
+    constructor(
+        public readonly audioPlayer: AudioPlayer,
+    ) {
+    }
+
+    public get volume(): number {
+        return this._volume;
+    }
+
+    public set volume(volume: number) {
+        this._volume = volume;
+        this.updateChannelVolume();
+    }
+
+    public get is_muted(): boolean {
+        return this._is_muted;
+    }
+
+    public set is_muted(muted: boolean) {
+        this._is_muted = muted;
+        this.updateChannelVolume();
+    }
+
+    public toggleMuted() {
+        this.is_muted = !this.is_muted;
+    }
+
+    protected abstract updateChannelVolume(): void;
+}
+
 /**
  * Handles the Music.
  */
-class AudioMusicPlayer {
+class AudioMusicPlayer extends AudioPlayerBase {
     protected channels: HTMLAudioElement[] = [];
     protected queue: MusicQueueItem[] = [];
-    protected active: MusicQueueItem|null = null;
+    protected active: MusicQueueItem | null = null;
     protected stopped = false;
-    protected volume = 1;
 
     public constructor(
-        public readonly audioPlayer: AudioPlayer,
+        readonly audioPlayer: AudioPlayer,
     ) {
-
+        super(audioPlayer);
+        this.volume = 0.1;
     }
 
     /**
@@ -72,25 +106,14 @@ class AudioMusicPlayer {
         return audioElement;
     }
 
-
-    /**
-     * Change the sfx volume.
-     * @param volume 
-     */
-    public setVolume(volume: number) {
-        this.volume = volume;
-        for (const channel of this.channels) {
-            channel.volume = volume;
-        }
-    }
-
     /**
      * Plays the music asset.
      * 
      * @param audio 
      * @returns The audio element that is playing the audio file.
      */
-    public queueNext(audio: MusicQueueItem|MusicAsset|string, options: Partial<Exclude<MusicQueueItem, "music">> = {}): HTMLAudioElement|null {
+    public queueNext(audio: MusicQueueItem | MusicAsset | string, options: Partial<Exclude<MusicQueueItem, "music">> = {}): HTMLAudioElement | null {
+        this.stopped = false;
         if (typeof audio === "string") {
             audio = game.assets.getMusic(audio);
         }
@@ -137,6 +160,15 @@ class AudioMusicPlayer {
     }
 
     /**
+     * Recalculate and updates the volume of all the music channels.
+     * */
+    protected updateChannelVolume() {
+        for (const channel of this.channels) {
+            channel.volume = this.is_muted ? 0 : this.volume;
+        }
+    }
+
+    /**
      * Stops all the music channels.
      */
     public stop() {
@@ -146,6 +178,9 @@ class AudioMusicPlayer {
         }
     }
 
+    /**
+     * Resumes the music channels.
+     */
     public play() {
         this.stopped = false;
         this.playNext();
@@ -156,15 +191,15 @@ class AudioMusicPlayer {
 /**
  * Handles the sound effects.
  */
-class AudioSfxPlayer {
+class AudioSfxPlayer extends AudioPlayerBase {
     protected channels: HTMLAudioElement[] = [];
     protected active_channel_count = 0;
-    protected volume = 1;
 
     public constructor(
-        public readonly audioPlayer: AudioPlayer,
+        readonly audioPlayer: AudioPlayer,
     ) {
-
+        super(audioPlayer);
+        this.volume = 0.3;
     }
 
 
@@ -185,14 +220,14 @@ class AudioSfxPlayer {
         const audioElement = document.createElement("audio");
         audioElement.addEventListener("playing", () => {
             this.active_channel_count++;
-            this.updateChannelVolumes();
+            this.updateChannelVolume();
         });
         audioElement.addEventListener("ended", () => {
             this.active_channel_count--;
-            this.updateChannelVolumes();
+            this.updateChannelVolume();
         });
         this.channels.push(audioElement);
-        this.updateChannelVolumes();
+        this.updateChannelVolume();
         return audioElement;
     }
 
@@ -200,16 +235,16 @@ class AudioSfxPlayer {
      * Recalculate and updates the volume of all the sound effect channels.
      * @returns the new volume of the sound effect channels.
      */
-    protected updateChannelVolumes(): number {
+    protected updateChannelVolume(): number {
         if (this.active_channel_count === 0) return this.volume;
-        const volume = (this.volume + 1) / (this.active_channel_count + 1);
+        const volume = this._is_muted
+            ? 0
+            : (2 / (this.active_channel_count + 1)) * this.volume;
         for (const channel of this.channels) {
             channel.volume = volume;
         }
-        console.log(`SFX volume: ${volume}`);
         return volume;
     }
-
 
     /**
      * Plays the audio file with the given name.
@@ -235,14 +270,4 @@ class AudioSfxPlayer {
         channel.play();
         return channel;
     }
-
-    /**
-     * Change the sfx volume.
-     * @param volume 
-     */
-    public setVolume(volume: number) {
-        this.volume = volume;
-        this.updateChannelVolumes();
-    }
-
 }

@@ -1,7 +1,8 @@
-import { KeyboardEvent, KeyboardController, KeyboardHandler, KeyName, assert, MouseController, MouseDownEvent, MouseMoveEvent, MouseUpEvent } from "../../library";
+import { KeyboardEvent, KeyboardController, KeyboardHandler, KeyName, assert, MouseController, MouseDownEvent, MouseMoveEvent, MouseUpEvent, MouseWheelEvent } from "../../library";
 import { Controller } from "../../library/abstract/mvc/Controller";
 import { ControllerResponse } from "../../library/abstract/mvc/Response";
 import { Vector2D } from "../../library/math";
+import { Rect } from "../../library/math/Rect";
 import { ASSET_MUSIC_NAMES } from "../base/Assets";
 import { Ball } from "../models/Ball";
 import { Brick } from "../models/Brick";
@@ -18,8 +19,7 @@ export class GameController implements Controller, KeyboardController, MouseCont
     /**
      * Start a new game
      */
-    public newGame(): ControllerResponse {     
-        game.audio.music.stop();
+    public newGame(): ControllerResponse {
         this.model.restart();
         for (let x = 0; x < 10; x++) {
             for (let y = 0; y < 5; y++) {
@@ -92,11 +92,42 @@ export class GameController implements Controller, KeyboardController, MouseCont
                 this.model.did_first_action = true;
                 game.audio.music.queueNext(ASSET_MUSIC_NAMES.TRACK_0);
             }
-            // this.model.paddle.has_ball = false;
+            this.model.paddle.has_ball = false;
+        }
+    }
+
+
+    public onMouseWheel(event: MouseWheelEvent): void {
+        const sound_button = new Rect(800 - 10 - 32 - 10 - 32, 10, 32, 32);
+        const music_button = new Rect(800 - 10 - 32, 10, 32, 32);
+        const scroll_speed = 0.05;
+        if (music_button.contains(game.mouse.position)) {
+            if (event.deltaY > 0) {
+                game.audio.music.volume = ( Math.max(0, game.audio.music.volume - scroll_speed));
+            } else if (event.deltaY < 0) {
+                game.audio.music.volume = ( Math.min(1, game.audio.music.volume + scroll_speed));
+            }
+        }
+        if (sound_button.contains(game.mouse.position)) {
+            if (event.deltaY > 0) {
+                game.audio.sfx.volume = ( Math.max(0, game.audio.sfx.volume - scroll_speed));
+            } else if (event.deltaY < 0) {
+                game.audio.sfx.volume = ( Math.min(1, game.audio.sfx.volume + scroll_speed));
+            }
+        }
+    }
+
+    public onMouseDown(event: MouseDownEvent): void {
+        const sound_button = new Rect(800 - 10 - 32 - 10 - 32, 10, 32, 32);
+        const music_button = new Rect(800 - 10 - 32, 10, 32, 32);
+        if (music_button.contains(game.mouse.position)) {
+            game.audio.music.toggleMuted();
+        }
+        if (sound_button.contains(game.mouse.position)) {
+            game.audio.sfx.toggleMuted();
         }
     }
 
     public onMouseMove?(event: MouseMoveEvent): void;
-    public onMouseDown?(event: MouseDownEvent): void;
     public onMouseUp?(event: MouseUpEvent): void;
 }

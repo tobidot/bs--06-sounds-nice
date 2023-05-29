@@ -4,11 +4,14 @@ import brick_red from "../../../../assets/images/brick-red.png";
 import brick_metal from "../../../../assets/images/brick-metal.png";
 import background from "../../../../assets/images/background.png";
 import heart from "../../../../assets/images/heart.png";
+import sound from "../../../../assets/icons/sound.png";
+import music from "../../../../assets/icons/music.png";
 import hit_brick from "../../../../assets/sounds/hit-gong.wav";
 import hit_wall from "../../../../assets/sounds/hit-bip.wav";
 import hit_paddle from "../../../../assets/sounds/hit-bop.wav";
 import hit_ball from "../../../../assets/sounds/hit-bip.wav";
-import background_music from "../../../../assets/music/spacy-bricks.wav";
+// import background_music from "../../../../assets/music/spacy-bricks.wav";
+import background_music from "../../../../assets/music/chat-gpt-1-retro-rythm-revival.wav";
 
 export enum ASSET_IMAGE_NAMES {
     BALL = "ball",
@@ -16,6 +19,8 @@ export enum ASSET_IMAGE_NAMES {
     PADDLE = "paddle",
     BACKGROUND = "background",
     HEART = "heart",
+    ICON_MUSIC = "icon-music",
+    ICON_SOUND = "icon-sound",
 };
 
 export enum ASSET_SFX_NAMES {
@@ -31,6 +36,8 @@ export enum ASSET_MUSIC_NAMES {
 
 export function registerAssets(asset_manager: AssetManager) {
     // Register images
+    asset_manager.addImage(ASSET_IMAGE_NAMES.ICON_MUSIC, music);
+    asset_manager.addImage(ASSET_IMAGE_NAMES.ICON_SOUND, sound);
     asset_manager.addImage(ASSET_IMAGE_NAMES.BALL, ball_blue);
     asset_manager.addImage(ASSET_IMAGE_NAMES.BRICK, brick_red);
     asset_manager.addImage(ASSET_IMAGE_NAMES.PADDLE, brick_metal);
